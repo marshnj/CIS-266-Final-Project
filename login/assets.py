@@ -13,8 +13,8 @@ class MainWindowUI:
         self.root.title("Assets")
         self.root.geometry("1400x650")
         
-        # Real user data - modified to use passed user_status - Nick
-        self.current_user = user_status
+        # Real user data - modified to use username and status passed from LOGIN - Nick
+        self.current_user = user_name
         if user_status == "ADMIN":
             self.is_admin = True
         else:
@@ -195,11 +195,10 @@ class MainWindowUI:
 # Main entry point
 if __name__ == "__main__":
 
-    # Added this to pass the current user_status (USER or ADMIN) from the login process - Nick
+    # Added this to read the passed current username and status (USER or ADMIN) from the login process - Nick
     if len(sys.argv) > 1:
-        print(f"Parameter 0: {sys.argv[0]}")
-        print(f"Parameter 1: {sys.argv[1]}")
-        user_status = {sys.argv[1]}
+        user_name = sys.argv[1]
+        user_status = sys.argv[2]
 
     app = MainWindowUI()
     app.run()

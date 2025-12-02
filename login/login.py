@@ -34,17 +34,21 @@ def login():
 
     # if a login.db row exists for this user/password 
     # check the username/password status
+    # get the username and status to pass to either SWITCH (for ADMIN) or ASSETS (for USERS)
     if row:
-        target_column = 'status'
+        target_column_1 = 'username'
+        target_column_6 = 'status'
         condition_column_1 = 'username'
         condition_value_1 = user_input.get()
         condition_column_2 = 'password'
         condition_value_2 = pass_input.get()
 
-        cursor.execute(f"SELECT {target_column} FROM login WHERE {condition_column_1} = ? AND {condition_column_2} = ?",
+        cursor.execute(f"SELECT {target_column_1}, {target_column_6} FROM login WHERE {condition_column_1} = ? AND {condition_column_2} = ?",
                    (condition_value_1, condition_value_2))
         result = cursor.fetchone()
-        current_user_status = result[0]
+        current_user_name = result[0]
+        current_user_status = result[1]
+        print(f"The username of this user is: {current_user_name}")
         print(f"The status of this user is: {current_user_status}")
 
         # if status is NEW, deny login - administrator has not approved the account yet.
@@ -56,18 +60,18 @@ def login():
         elif current_user_status == "USER":
             messagebox.showinfo(title="Successfull Log in", message="You have successfully logged in.")
             script_name = "assets.py"
-            command = f"python {script_name} {""} {""} {""} {""} {""} {""} {""} {current_user_status}"
-            os.system(command)
+            command = f"python {script_name} {current_user_name} {""} {""} {""} {""} {""} {""} {current_user_status}"
             conn.close() 
+            os.system(command)
             sys.exit()  
 
         # if status is ADMIN, allow login and go the switch UI
         elif current_user_status == "ADMIN":
             messagebox.showinfo(title="Successfull Log in", message="You have successfully logged in.")
             script_name = "switch.py"
-            command = f"python {script_name} {""} {""} {""} {""} {""} {""} {""} {current_user_status}"
-            os.system(command)
+            command = f"python {script_name} {current_user_name} {""} {""} {""} {""} {""} {""} {current_user_status}"
             conn.close()
+            os.system(command)
             sys.exit()   
 
     # login failed because no login.db row exists for this user/password 

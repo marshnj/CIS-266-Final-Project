@@ -59,6 +59,7 @@ def account():
                             # Can't login until the admin sets the status to USER
                             create_user(user_input, pass_input, firstname_input, middleinitial_input, lastname_input, email_input, status_var)
                             conn.close()
+                            sys.exit() 
                         else:
                             # Email address is not valid
                             messagebox.showinfo(title="Email address is invalid", message="Email address is not the correct format")
@@ -105,6 +106,7 @@ def create_user (uname, pword, fname, midi, lname, emailadd, statusvar):
 
     conn.commit()
     conn.close()
+    sys.exit() 
 
 def check_password_strength(password):
 

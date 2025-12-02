@@ -14,16 +14,18 @@ def accounts():
 
     # Go to the userview UI
     script_name = "userview.py"
-    command = f"python {script_name} {user_status}"
+    command = f"python {script_name} {user_name} {user_status}"
     os.system(command)
+    sys.exit() 
 
 def assets():
 
     # Go to the assets UI
     script_name = "assets.py"
-    command = f"python {script_name} {user_status}"
+    print(f"Parameter 1: user_status")
+    command = f"python {script_name} {user_name} {user_status}"
     os.system(command)
-
+    sys.exit() 
 
 # Create the frame
 frame = tkinter.Frame(bg = 'lightgray')
@@ -41,10 +43,14 @@ login_button.grid(row=1, column=0, pady=15, padx=5)
 reset_button = tkinter.Button(frame, text="Asset Management", font=("arial", 14), command=assets, bg = "#2B07F8", fg = "#FFFFFF")
 reset_button.grid(row=1, column=1, pady=15, padx=5)
 
+# If passed from LOGIN, save username and status to pass to either ASSETS or USERVIEW
 if len(sys.argv) > 1:
+        print(f"this is in SWITCH")
         print(f"Parameter 0: {sys.argv[0]}")
         print(f"Parameter 1: {sys.argv[1]}")
-        user_status = {sys.argv[1]}
+        print(f"Parameter 2: {sys.argv[2]}")
+        user_name = sys.argv[1]
+        user_status = sys.argv[2]
         
 frame.pack()
 
