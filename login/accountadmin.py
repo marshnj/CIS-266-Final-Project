@@ -163,8 +163,30 @@ def is_valid_name(name):
 
   return name.isalpha()
 
+# Method to check if the email is a valid format.
+
+# Username (Local part): 
+#       The first part of the email address, before the "@" symbol.
+#       Allowed characters: Letters (a-z, A-Z), numbers (0-9), and special characters 
+#       like periods (.), hyphens (-), and underscores (_).
+#       Note: Some providers treat addresses as case-insensitive and ignore periods within 
+#       the username (e.g., john.smith@gmail.com is the same as johnsmith@gmail.com).
+#       Subaddressing: Many services allow you to add a plus sign (+) followed by a tag to 
+#       the username (e.g., username+tag@domain.com) to help filter emails, though it is 
+#       not supported by all providers.
+
+# @ symbol:
+#       The separator between the username and the domain name.
+
+# Domain name: 
+#       The second part of the email address, after the "@" symbol.
+#       Structure: Consists of one or more parts separated by dots.
+#       Allowed characters: Letters, numbers, and dashes, but a dash cannot be
+#       at the beginning or end of a part.
+
+#Top-Level Domain (TLD): The final part of the domain name (e.g., .com, .org, .net, .edu, .gov). 
+
 def is_valid_email(email):
-    # Check if the email is a valid format.
 
     # Regular expression for validating an Email
     regex = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
@@ -260,6 +282,7 @@ hide_button.grid(row=8, column=1, columnspan=3, sticky=tkinter.EW)
 request_button = tkinter.Button(frame, text=function_name, font=("arial", 14), command=account, bg = "#023508", fg = "#F5F0F0")
 request_button.grid(row=9, column=1, columnspan=4, sticky=tkinter.EW, pady=20, padx=20) 
 
+# Pass all the values for the selected login.db row into account admin
 if len(sys.argv) > 1:
         #print(f"Parameter 0: {sys.argv[0]}")
         #print(f"Parameter 1: {sys.argv[1]}")

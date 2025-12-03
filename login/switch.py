@@ -12,19 +12,30 @@ window.configure(bg = 'lightgray')
 
 def accounts():
 
-    # Go to the userview UI
+    # Select the userview.py script
     script_name = "userview.py"
+
+    # Build the command to pass the username and status to users
     command = f"python {script_name} {user_name} {user_status}"
+
+    # Run users
     os.system(command)
+
+    # Shut down login after return from users 
     sys.exit() 
 
 def assets():
 
-    # Go to the assets UI
+    # Go to the assets.py script
     script_name = "assets.py"
-    print(f"Parameter 1: user_status")
+
+    # Build the command to pass the username and status to users
     command = f"python {script_name} {user_name} {user_status}"
+
+    # Run users
     os.system(command)
+
+    # Shut down login after return from users 
     sys.exit() 
 
 # Create the frame
@@ -43,12 +54,12 @@ login_button.grid(row=1, column=0, pady=15, padx=5)
 reset_button = tkinter.Button(frame, text="Asset Management", font=("arial", 14), command=assets, bg = "#2B07F8", fg = "#FFFFFF")
 reset_button.grid(row=1, column=1, pady=15, padx=5)
 
-# If passed from LOGIN, save username and status to pass to either ASSETS or USERVIEW
+# If passed from LOGIN, save username and status to pass to either assets or users
 if len(sys.argv) > 1:
-        print(f"this is in SWITCH")
-        print(f"Parameter 0: {sys.argv[0]}")
-        print(f"Parameter 1: {sys.argv[1]}")
-        print(f"Parameter 2: {sys.argv[2]}")
+        print(f"this is in SWITCH")          # Comment out after development
+        print(f"Parameter 0: {sys.argv[0]}") # Comment out after development
+        print(f"Parameter 1: {sys.argv[1]}") # Comment out after development
+        print(f"Parameter 2: {sys.argv[2]}") # Comment out after development
         user_name = sys.argv[1]
         user_status = sys.argv[2]
         

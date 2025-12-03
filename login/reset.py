@@ -10,43 +10,63 @@ window.configure(bg = 'lightgray')
 
 # Reset method:  Checks the username and password against the login.db
 def reset():
+
     # connect to login.db
     conn=sqlite3.connect('login.db')
     database_file = "login.db"
+
     # commit
     conn.commit()
+
     # create a cursor
     cursor=conn.cursor()
+
     # see if user_input and pass_input are in the db
     cursor.execute("SELECT * FROM login where username=? AND password = ?", ( user_input.get(), old_pass_input.get()))
+
     # fetch a row
     row=cursor.fetchone()
-    # if the row exist for this use you can continue to check the password reset
+
+    # if the row exists for this user you can continue to check the password reset
     if row:
-        # 
+
+        # Make sure the new and verify passwords match
         if new_pass_input.get() == verify_pass_input.get():
+
+            # Show the user that the passwords match, comment out after development?
             messagebox.showinfo(title="New and Verify Passwords Match", message="New Password and Verify Password match.")
+
+            # Set the password variable to the new password
             password_input = new_pass_input.get()
+
+            # Test result of method check password strength
             if check_password_strength(password_input):
+
+                # Display a success message
                 messagebox.showinfo(title="Reset success!", message="Password is valid.")
-                # here is where you call a dev to update the password for user_input
+
+                # Call update password method to update the password for user_input
                 update_password ()
             else:
+
+                # Give the user the password rules if the first attempt falled.
                 messagebox.showinfo(title="Reset failed!", message="Passwords must be 8 characters long with at least one upper case, one lower case, one number, and one special character.")
-                print("Password is not valid.")
         else:
+
+            # Warn the user the new and verified passwords do not match
             messagebox.showinfo(title="Reset failed", message="New Password and Verify Password do not match.")
         conn.close()
     else:
-    # if the row not exist for this user/password you can continue to check the password reset
+        # If the row does not exist for this user/password in login.db, show a warningy
         messagebox.showinfo(title="Reset failed", message="Username or old password are not valid.")
         conn.close()
     
 def check_password_strength(password):
-    """
-    Checks the strength of a password based on several criteria.
-    Returns True if the password meets all criteria, False otherwise.
-    """
+
+    # Checks the strength of a password based on several criteria.
+    # Returns True if the password meets all criteria, False otherwise.
+
+    # Set variables for the password check
     min_length = 8
     has_uppercase = False
     has_lowercase = False
@@ -56,52 +76,66 @@ def check_password_strength(password):
 
     # Check password length
     if len(password) < min_length:
-        print(f"Password must be at least {min_length} characters long.")
+        messagebox.showinfo(title="Reset Error", message="Password must be at least 8 characters.")
         return False
 
     # Check for character types
     for char in password:
+
+        # Check for an Upper Case
         if char.isupper():
             has_uppercase = True
+
+        # Check for a Lower Case
         elif char.islower():
             has_lowercase = True
+
+        # Check for a number
         elif char.isdigit():
             has_digit = True
+
+        # Check for a special character
         elif char in special_characters:
             has_special_char = True
 
-    # Evaluate all criteria
+    # Evaluate all criteria. Display the appropriate error messages for failures
     if not has_uppercase:
         messagebox.showinfo(title="Reset Error", message="Password must contain at least one uppercase letter.")
         return False
     if not has_lowercase:
         messagebox.showinfo(title="Reset Error", message="Password must contain at least one lowercase letter.")
-        print("Password must contain at least one lowercase letter.")
         return False
     if not has_digit:
         messagebox.showinfo(title="Reset Error", message="Password must contain at least one digit.")
-        print("Password must contain at least one digit.")
         return False
     if not has_special_char:
         messagebox.showinfo(title="Reset Error", message="Password must contain at least one special character.")       
-        print("Password must contain at least one special character.")
         return False
         messagebox.showinfo(title="Reset Approved", message="Password meets all strength requirements.")       
     return True
 
 def update_password ():
+
     # connect to login.db
     conn=sqlite3.connect('login.db')
     database_file = "login.db"
+
     # commit
     conn.commit()
+
     # create a cursor
     cursor=conn.cursor()
+
+    # Execute SQL command to update the password to the new password
     cursor.execute("Update login SET password = ? WHERE username = ?", ( verify_pass_input.get(), user_input.get()))
+
+    # commit
     conn.commit()
+
+    # Close login.db
     conn.close()
 
-# method for hiding and showing the password
+# method for hiding and showing the passwords
 def unhide():
     if pass_hide.get() == 1:
         old_password_entry.config(show="")

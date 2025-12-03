@@ -4,6 +4,7 @@ import tkinter
 import sqlite3
 from tkinter import INSERT, messagebox
 
+# Create the window for the Login form
 window = tkinter.Tk()
 window.title("Login form")
 window.geometry('540x440')
@@ -11,22 +12,28 @@ window.configure(bg = 'lightgray')
 
 # Login method:  Checks the username and password against the login.db
 def login():
+
     # connect to login.db
     conn=sqlite3.connect('login.db')
     database_file = "login.db"
+
     # if the file exists, show a message
     if os.path.isfile(database_file):
-        print(f"The SQLite database '{database_file}' exists.")
-    # if the file does not exist, create it and commit an admin record
+        print(f"The SQLite database '{database_file}' exists.") # Comment out after development
+
+    # if the file does not exist, create it and commit a default admin record
     else:
-        print(f"The SQLite database '{database_file}' does not exist.")
+        print(f"The SQLite database '{database_file}' does not exist.") # Comment out after development
         conn.execute('CREATE TABLE IF NOT EXISTS login(username TEXT, password TEXT, firstname TEXT, mi TEXT, lastname TEXT, email TEXT, status TEXT)')
         conn.execute("INSERT INTO login(username, password, firstname, mi, lastname, email, status) VALUES('admin','admin','John', 'A', 'Smith', 'john.a.smith@gmail.com', 'ADMIN')")
+
     # commit
     conn.commit()
+
     # create a cursor
     cursor=conn.cursor()
-    # see if user_input and pass_input are in the db
+
+    # see if the entered username and password (user_input and pass_input) are in the db
     cursor.execute("SELECT * FROM login where username=? AND password = ?", ( user_input.get(), pass_input.get()))
 
     # fetch a row
@@ -36,58 +43,91 @@ def login():
     # check the username/password status
     # get the username and status to pass to either SWITCH (for ADMIN) or ASSETS (for USERS)
     if row:
+
+        # Set variables to retrieve the username and status from login.db
         target_column_1 = 'username'
         target_column_6 = 'status'
+
+        # Look in the username and password columns to see if the entered username
+        # and password match a record in the login.db
         condition_column_1 = 'username'
         condition_value_1 = user_input.get()
         condition_column_2 = 'password'
         condition_value_2 = pass_input.get()
-
+    
+        # Execute the SQL commant to return username and status for this username and password
         cursor.execute(f"SELECT {target_column_1}, {target_column_6} FROM login WHERE {condition_column_1} = ? AND {condition_column_2} = ?",
                    (condition_value_1, condition_value_2))
+
+        # Set varibles to the result of the SQL command
         result = cursor.fetchone()
         current_user_name = result[0]
         current_user_status = result[1]
-        print(f"The username of this user is: {current_user_name}")
-        print(f"The status of this user is: {current_user_status}")
 
-        # if status is NEW, deny login - administrator has not approved the account yet.
+        print(f"The username of this user is: {current_user_name}") # Comment out after development
+        print(f"The status of this user is: {current_user_status}") # Comment out after development
+
+        # If status is NEW, deny login - administrator has not approved the account yet.
         if current_user_status == "NEW":
-            messagebox.showinfo(title="Login failed", message="Your account is not approved as yet.")
+            messagebox.showinfo(title="Login failed!", message="Your account is not approved as yet. Contact the administrator.")
+ 
+            # Close the DB
+            conn.close() 
+            
+        # If status is USER, allow login and go to Emily's asset UI. 
+        # User can only access the assets DB to check assets in and out      
+        elif current_user_status == "USER":
+            messagebox.showinfo(title="Successfull Log in", message="You have successfully logged in. You will be directed to asset check-in and check-out.")
+
+            # Select the assets.py script
+            script_name = "assets.py"
+
+            # Build the command to pass username and status to assets
+            command = f"python {script_name} {current_user_name} {""} {""} {""} {""} {""} {""} {current_user_status}"
+
+            # Close the DB
             conn.close() 
 
-        # if status is USER, allow login and go to Emily's asset UI.        
-        elif current_user_status == "USER":
-            messagebox.showinfo(title="Successfull Log in", message="You have successfully logged in.")
-            script_name = "assets.py"
-            command = f"python {script_name} {current_user_name} {""} {""} {""} {""} {""} {""} {current_user_status}"
-            conn.close() 
+            # Run assets
             os.system(command)
+
+            # Shut down login after return from assets
             sys.exit()  
 
         # if status is ADMIN, allow login and go the switch UI
+        # Administrators can access either the assets or users UIs 
         elif current_user_status == "ADMIN":
-            messagebox.showinfo(title="Successfull Log in", message="You have successfully logged in.")
-            script_name = "switch.py"
-            command = f"python {script_name} {current_user_name} {""} {""} {""} {""} {""} {""} {current_user_status}"
-            conn.close()
-            os.system(command)
-            sys.exit()   
+            messagebox.showinfo(title="Successfull Log in", message="You have successfully logged in. Choose to go to asset or user management.")
 
-    # login failed because no login.db row exists for this user/password 
+            # Select the switch.py script
+            script_name = "switch.py"
+
+           # Build the command to pass the username and status to assets
+            command = f"python {script_name} {current_user_name} {""} {""} {""} {""} {""} {""} {current_user_status}"
+
+            # Close the DB
+            conn.close() 
+
+            # Run assets
+            os.system(command)
+
+            # Shut down login after return from assets
+            sys.exit()  
+
+    # Login failed because no login.db row exists for this user/password 
     else:
         messagebox.showinfo(title="Login failed", message="Invalid log in, username and/or password are incorrect.")
         conn.close()
     
-# method for resetting your password
+# Method for resetting your password
 def reset():
     os.system("reset.py")
     
-# method for requesting an account
+# Method for requesting an account
 def account():
     os.system("account.py")
 
-# method for hiding and showing the password
+# Method for hiding and showing the password
 def unhide():
     if pass_hide.get() == 1:
         password_entry.config(show="")
